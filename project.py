@@ -1,15 +1,13 @@
 import itertools
+import time
 class deadlock():
     reso=[]
     need=[]
     avail=[]
     priority=[]
     ss=[]
-    process=[]
     d_solutions=[]
-    d_solutions_ss=[]
-    d_solutions_remove=[]
-    current_max=0
+    process=[]
     previous_max=0
     n=0
     r=0
@@ -23,6 +21,7 @@ class deadlock():
 
     def errorreport(self):
         print("Deadlock detected!!!")
+        time.sleep(1)
         print("Deplpoy deadlock removal algorithm ?" , end=' ')
         ch = input()
         if ch.upper() == 'Y':
@@ -36,10 +35,12 @@ class deadlock():
         for i in range(self.n):
             print(self.process[self.ss[i]])
 
-    def deadlock_trial(self,subset):
+    def deadlock_trial(self,subset=None):
         trial_process = self.process.copy()
         avail = self.avail.copy()
-        deleted=[]
+        append_this=[]
+        d_solutions_ss=[]
+        d_solutions_remove=[]
         self.ss =[]
         command = True
         avail = self.avail.copy()
@@ -49,12 +50,14 @@ class deadlock():
         finish=[]
         final_value=sum(self.priority)
         trial_n = self.n
+        ggg=0
         for i in trial_process:
             if i in subset:
-                trial_process[i]=-1
+                trial_process[ggg]=-1
                 trial_n-=1
-                final_value-=self.priority[i]
-                deleted.append(self.process(i))
+                final_value-=self.priority[ggg]
+                d_solutions_remove.append(self.process[ggg])
+            ggg+=1
         for ex in range(self.n):
             finish.append(0)
         while command:
@@ -63,37 +66,56 @@ class deadlock():
                     if last==i:
                         return False
                     if f==0:
-                        last=0
+                        last=i
                         f=1
                     flag=True
                     for j in range(self.r):  #check if request < resource
                         if avail[j] < self.need[i][j] :
                             flag = False
                     if flag==True and finish[i]==0:
-                        self.ss.append(i)
+                        d_solutions_ss.append(i)
                         for _ in range(self.r):
                             avail[_]=avail[_]+self.reso[i][_]
                         last=i
                         finish[i]=1
-                if len(self.ss)==trial_n:
-                    command=False
-        if self.current_max >= self.previous_max:
-            #self.d_solutions_remove.append(deleted)
-            #self.d_solutions_ss.append(self.ss)
-            #self.current_max=final_value
+            if len(d_solutions_ss)==trial_n:
+                command=False
+        if final_value >= self.previous_max:
+            append_this.append(final_value)
+            append_this.append(d_solutions_ss)
+            append_this.append(d_solutions_remove)
+            self.d_solutions.append(append_this)
+            self.previous_max=final_value
         return True
 
     def deadlock_removal(self):
         print("Enter priority for each process: ")
-        for _ in range(self.n):
-            print("{} ".format(self.process(_)),end=' ')
+        for i in range(self.n):
+            print("{}".format(self.process[i]),end=' ')
             self.priority.append(int(input()))
 
-        for L in range(1, len(self.process):
+        for L in range(1, len(self.process)):
             for test_set in itertools.combinations(self.process, L):
-                if deadlock_trial(test_set):
-
-
+                if self.deadlock_trial(test_set):
+                    time.sleep(1)
+                    print(".",end="")
+        print("\n")
+        self.d_solutions.sort()
+        max_value=self.d_solutions[0][0]
+        print("The maximum value of possible weight is :",end=' ')
+        print(max_value)
+        print("The possible solutons to achive this are : ")
+        print_count=1
+        for gg in self.d_solutions :
+            if gg[0] == max_value:
+                print("Solution Number : {}".format(print_count))
+                print_count+=1
+                print("The Safe Sequence is : ")
+                for xd in gg[1]:
+                    print(self.process[xd])
+                print("The Process removed are : ")
+                for xd in gg[2]:
+                    print(xd)
         exit(1)
 
     def dda(self):
@@ -108,7 +130,6 @@ class deadlock():
         while command:
             for i in range(self.n):
                 if last==i:
-                    print("opppssss")
                     self.errorreport()
                 if f==0:
                     last=0
@@ -123,8 +144,10 @@ class deadlock():
                         avail[_]=avail[_]+self.reso[i][_]
                     last=i
                     finish[i]=1
+                    time.sleep(1)
                     print("{} executed.........".format(self.process[i]))
                 elif finish[i]==0:
+                    time.sleep(1)
                     print("{} waiting.......".format(self.process[i]))
             if len(self.ss)==self.n:
                 command=False
