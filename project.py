@@ -101,7 +101,7 @@ class deadlock():
                     print(".",end="")
         print("\n")
         self.d_solutions.sort()
-        max_value=self.d_solutions[0][0]
+        max_value=self.d_solutions[-1][0]
         print("The maximum value of possible weight is :",end=' ')
         print(max_value)
         print("The possible solutons to achive this are : ")
@@ -183,3 +183,4 @@ class deadlock():
 
 myqu=deadlock()
 myqu.main()
+
