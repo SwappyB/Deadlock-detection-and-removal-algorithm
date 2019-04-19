@@ -1,3 +1,5 @@
 # OS-project
 Deadlock detection and removal using python
-Done Done Done
+The deadlock removal algorithm works on the priority of the process.
+You can use it for N number of processes ..
+GLHF..
